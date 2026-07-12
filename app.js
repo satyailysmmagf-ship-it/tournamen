@@ -1,4 +1,4 @@
-const API = window.CAFFE_API_URL || 'http://127.0.0.1:8787/api';
+const API = window.CAFFE_API_URL || 'https://caffe-mc-tournament-api.phanhaotdg.workers.dev/';
 const app = document.querySelector('#app');
 const state = { user:null, settings:null, submission:null, step:1, draft:{players:{}}, admin:false };
 const $ = (s,r=document)=>r.querySelector(s); const $$=(s,r=document)=>[...r.querySelectorAll(s)];
