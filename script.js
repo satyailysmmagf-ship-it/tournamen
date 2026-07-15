@@ -2,7 +2,7 @@
    CONFIG
    ============================================================ */
 const SERVER_DOMAIN = "caffemc.xyz";
-const JAVA_PORT = "25565";
+const JAVA_PORT = "19132";
 const BEDROCK_PORT = "19132";
 const COPY_IP = SERVER_DOMAIN;
 
