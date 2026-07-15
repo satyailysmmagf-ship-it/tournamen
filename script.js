@@ -6,7 +6,7 @@ const JAVA_PORT = "25565";
 const BEDROCK_PORT = "19132";
 const COPY_IP = SERVER_DOMAIN;
 
-const WORKER_URL = "https://coffemc-api.chhinkimrong.workers.dev";
+const WORKER_URL = "https://api2.caffemc.xyz";
 
 let checking = false;
 
