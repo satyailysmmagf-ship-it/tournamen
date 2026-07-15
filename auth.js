@@ -14,7 +14,7 @@
    ============================================================ */
 
 // >>> EDIT THIS to your deployed Worker URL <<<
-const API_BASE = "api2.caffemc.xyz";
+const API_BASE = "https://api2.caffemc.xyz";
 
 const AUTH_USER_KEY = "coffemc_user";
 
