@@ -1,19 +1,4 @@
-/* ============================================================
-   CoffeMC — shared auth / API helper
-   Include this BEFORE script.js on every page.
 
-   The real backend (Cloudflare Worker) uses HttpOnly cookie
-   sessions, not bearer tokens — the browser sends the session
-   cookie automatically on every request as long as we pass
-   `credentials: "include"`. We keep a *copy* of the logged-in
-   user's public info in localStorage purely so the UI (nav bar,
-   "Welcome back" text, admin links) can render instantly without
-   waiting on a network round trip. That cached copy is never used
-   to authenticate anything — the server always re-checks the
-   cookie on every request.
-   ============================================================ */
-
-// >>> EDIT THIS to your deployed Worker URL <<<
 const API_BASE = "https://api2.caffemc.xyz";
 
 const AUTH_USER_KEY = "coffemc_user";
