@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Squad Registration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#060a12;
+    --bg-grid:#0a1120;
+    --panel:#0f1526;
+    --panel-2:#141c33;
+    --line:#1f2a45;
+    --cyan:#35f0d0;
+    --magenta:#ff3d7f;
+    --gold:#ffc24b;
+    --text:#e8edfb;
+    --muted:#7c8aa8;
+    --danger:#ff5470;
+  }
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  ::selection{background:var(--cyan);color:#03110d;}
+
+  html{-webkit-text-size-adjust:100%;}
+  html,body{margin:0;padding:0;overflow-x:hidden;}
+  body{
+    background:
+      radial-gradient(1100px 600px at 15% -10%, rgba(53,240,208,.10), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(255,61,127,.10), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Manrope',sans-serif;
+    min-height:100vh;
+    min-height:100dvh;
+    padding:48px 20px 90px;
+    padding-top:calc(48px + env(safe-area-inset-top));
+    padding-bottom:calc(90px + env(safe-area-inset-bottom));
+    padding-left:calc(20px + env(safe-area-inset-left));
+    padding-right:calc(20px + env(safe-area-inset-right));
+    background-attachment:fixed;
+  }
+
+  /* iOS Safari chokes on fixed background-attachment + zooms inputs under 16px */
+  @media (max-width:640px){
+    body{background-attachment:scroll;padding:28px 16px 70px;}
+  }
+  @supports (-webkit-touch-callout:none){
+    body{background-attachment:scroll;}
+  }
+
+  .bg-grid{
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size:42px 42px;
+    mask-image:radial-gradient(circle at 50% 20%, black, transparent 75%);
+  }
+
+  .wrap{max-width:900px;margin:0 auto;position:relative;z-index:1;}
+
+  /* ---------- HEADER / ID BANNER ---------- */
+  .id-banner{
+    display:flex;align-items:center;gap:28px;
+    background:linear-gradient(135deg, var(--panel-2), var(--panel));
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:30px 34px;
+    position:relative;
+    overflow:hidden;
+    max-width:100%;
+  }
+  .id-banner::before{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(100deg, transparent 40%, rgba(53,240,208,.08) 50%, transparent 60%);
+    pointer-events:none;
+  }
+  .eyebrow{
+    font-family:'Chakra Petch',sans-serif;
+    letter-spacing:.32em;
+    font-size:11px;
+    color:var(--cyan);
+    text-transform:uppercase;
+    margin:0 0 6px;
+    font-weight:600;
+  }
+
+  .logo-frame{
+    flex:0 0 auto;
+    width:104px;height:118px;
+    position:relative;
+    cursor:pointer;
+    clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background:var(--bg-grid);
+    border:none;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .2s ease;
+  }
+  .logo-frame:hover{transform:translateY(-2px);}
+  .logo-frame::after{
+    content:"";position:absolute;inset:0;
+    clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    padding:2px;
+    background:linear-gradient(135deg, var(--cyan), var(--magenta));
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+    mask-composite:exclude;
+    pointer-events:none;
+  }
+  .logo-frame img{
+    width:100%;height:100%;object-fit:cover;
+    clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+  .logo-frame .plus-icon{
+    color:var(--muted);
+    font-family:'Chakra Petch',sans-serif;
+    font-size:11px;
+    letter-spacing:.06em;
+    text-align:center;
+    line-height:1.4;
+    padding:0 10px;
+  }
+  .logo-frame .plus-icon b{
+    display:block;font-size:22px;color:var(--cyan);font-weight:600;
+  }
+  #logoInput{display:none;}
+
+  .banner-main{flex:1;min-width:0;}
+  .team-name-input{
+    width:100%;
+    background:transparent;
+    border:none;
+    border-bottom:2px solid var(--line);
+    color:var(--text);
+    font-family:'Chakra Petch',sans-serif;
+    font-weight:700;
+    font-size:clamp(28px,5vw,44px);
+    letter-spacing:.01em;
+    padding:4px 0 10px;
+    outline:none;
+    transition:border-color .2s ease;
+  }
+  .team-name-input::placeholder{color:#3a4666;}
+  .team-name-input:focus{border-bottom-color:var(--cyan);}
+
+  /* ---------- SECTIONS ---------- */
+  .section{margin-top:44px;}
+  .section-head{
+    display:flex;align-items:baseline;gap:14px;margin-bottom:18px;
+  }
+  .section-tag{
+    font-family:'Chakra Petch',sans-serif;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:.28em;
+    color:var(--muted);
+    text-transform:uppercase;
+  }
+  .section-title{
+    font-family:'Chakra Petch',sans-serif;
+    font-size:22px;
+    font-weight:700;
+    margin:0;
+  }
+  .section-rule{
+    flex:1;height:1px;
+    background:linear-gradient(90deg, var(--line), transparent);
+  }
+
+  .roster-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(190px,1fr));
+    gap:14px;
+  }
+
+  .slot-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 16px 14px;
+    position:relative;
+    transition:border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+  }
+  .slot-card:focus-within{
+    border-color:var(--cyan);
+    transform:translateY(-2px);
+    box-shadow:0 8px 24px -8px rgba(53,240,208,.35);
+  }
+  .slot-card.leader{
+    border-color:rgba(255,194,75,.4);
+    background:linear-gradient(160deg, rgba(255,194,75,.08), var(--panel) 60%);
+  }
+  .slot-card.leader:focus-within{
+    border-color:var(--gold);
+    box-shadow:0 8px 24px -8px rgba(255,194,75,.4);
+  }
+  .slot-tag{
+    display:flex;align-items:center;gap:6px;
+    font-family:'Chakra Petch',sans-serif;
+    font-size:11px;font-weight:600;letter-spacing:.14em;
+    color:var(--muted);text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  .slot-card.leader .slot-tag{color:var(--gold);}
+  .crown{font-size:13px;}
+  .slot-input{
+    width:100%;background:transparent;border:none;outline:none;
+    color:var(--text);font-family:'Manrope',sans-serif;
+    font-size:16px;font-weight:600;
+    border-bottom:1px solid transparent;
+    padding:4px 0 6px;
+  }
+  .slot-input::placeholder{color:#3f4a68;font-weight:500;}
+
+  .sub-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    gap:14px;
+  }
+  .slot-card.sub{
+    border-style:dashed;
+    background:rgba(255,61,127,.03);
+  }
+  .slot-card.sub .slot-tag{color:var(--magenta);}
+  .slot-card.sub:focus-within{
+    border-color:var(--magenta);
+    box-shadow:0 8px 24px -8px rgba(255,61,127,.35);
+  }
+
+  /* ---------- VERIFICATION ---------- */
+  .verify-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px 24px;
+    display:flex;align-items:center;gap:18px;
+    flex-wrap:wrap;
+  }
+  .verify-text{flex:1;min-width:220px;}
+  .verify-text p{margin:0;color:var(--muted);font-size:14px;line-height:1.5;}
+  .verify-text .handle{color:var(--cyan);font-weight:700;}
+  .verify-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+  .channel-btn{
+    font-family:'Chakra Petch',sans-serif;
+    font-weight:600;font-size:13px;letter-spacing:.06em;
+    color:var(--bg);background:var(--cyan);
+    border:none;border-radius:8px;padding:10px 16px;
+    text-decoration:none;white-space:nowrap;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .channel-btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px -6px rgba(53,240,208,.6);}
+
+  .check-row{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
+  .check-row input{
+    appearance:none;width:20px;height:20px;flex:0 0 auto;
+    border:2px solid var(--line);border-radius:5px;
+    background:var(--bg-grid);
+    position:relative;cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .check-row input:checked{
+    background:var(--cyan);border-color:var(--cyan);
+  }
+  .check-row input:checked::after{
+    content:"";position:absolute;left:5px;top:1px;
+    width:6px;height:11px;
+    border:solid #03110d;border-width:0 2px 2px 0;
+    transform:rotate(45deg);
+  }
+  .check-row span{font-size:13px;color:var(--text);font-weight:600;}
+
+  /* ---------- SUBMIT ---------- */
+  .submit-zone{margin-top:44px;text-align:center;}
+  .lock-btn{
+    position:relative;
+    font-family:'Chakra Petch',sans-serif;
+    font-weight:700;font-size:16px;letter-spacing:.1em;
+    color:#03110d;
+    background:linear-gradient(100deg, var(--cyan), #6bf5df);
+    border:none;border-radius:10px;
+    padding:16px 46px;
+    cursor:pointer;
+    text-transform:uppercase;
+    transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+    box-shadow:0 10px 30px -10px rgba(53,240,208,.55);
+  }
+  .lock-btn:hover:not(:disabled){transform:translateY(-2px);}
+  .lock-btn:disabled{
+    opacity:.35;cursor:not-allowed;
+    background:var(--line);color:var(--muted);box-shadow:none;
+  }
+  .lock-btn .spinner{
+    display:none;width:15px;height:15px;
+    border:2px solid rgba(3,17,13,.3);border-top-color:#03110d;
+    border-radius:50%;
+    margin-right:8px;
+    vertical-align:-2px;
+    animation:spin .7s linear infinite;
+  }
+  .lock-btn.loading .spinner{display:inline-block;}
+  .lock-btn.loading .btn-label{opacity:.7;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .status-msg{
+    margin-top:18px;font-family:'Chakra Petch',sans-serif;
+    font-size:13px;font-weight:600;letter-spacing:.05em;
+    min-height:20px;
+  }
+  .status-msg.ok{color:var(--cyan);}
+  .status-msg.err{color:var(--danger);}
+
+  .hint{
+    text-align:center;color:var(--muted);font-size:12px;margin-top:8px;
+  }
+
+  /* ---------- STAMP OVERLAY ---------- */
+  .stamp-overlay{
+    position:fixed;inset:0;background:rgba(3,6,12,.82);
+    display:none;align-items:center;justify-content:center;
+    z-index:50;backdrop-filter:blur(3px);
+  }
+  .stamp-overlay.show{display:flex;}
+  .stamp{
+    font-family:'Chakra Petch',sans-serif;
+    font-weight:700;font-size:clamp(30px,6vw,54px);
+    color:var(--cyan);
+    border:5px solid var(--cyan);
+    border-radius:14px;
+    padding:20px 46px;
+    letter-spacing:.08em;
+    transform:rotate(-8deg) scale(1.4);
+    opacity:0;
+    text-transform:uppercase;
+    text-shadow:0 0 24px rgba(53,240,208,.6);
+    box-shadow:0 0 40px rgba(53,240,208,.25) inset;
+    animation:stampIn .5s cubic-bezier(.2,1.4,.4,1) forwards;
+  }
+  .stamp small{
+    display:block;font-size:13px;color:var(--muted);letter-spacing:.2em;margin-top:8px;font-weight:600;
+  }
+  @keyframes stampIn{
+    0%{opacity:0;transform:rotate(-8deg) scale(1.6);}
+    60%{opacity:1;}
+    100%{opacity:1;transform:rotate(-8deg) scale(1);}
+  }
+  .stamp-close{
+    position:absolute;margin-top:110px;
+    font-family:'Chakra Petch',sans-serif;
+    color:var(--muted);font-size:12px;letter-spacing:.1em;
+    background:none;border:1px solid var(--line);
+    padding:8px 16px;border-radius:8px;cursor:pointer;
+  }
+
+  footer{
+    text-align:center;margin-top:60px;color:var(--muted);
+    font-size:12px;letter-spacing:.04em;
+  }
+
+  @media (max-width:640px){
+    .section{margin-top:32px;}
+    .roster-grid, .sub-grid{gap:12px;}
+  }
+
+  @media (max-width:520px){
+    .id-banner{flex-direction:column;align-items:center;text-align:center;padding:24px 20px;gap:18px;}
+    .banner-main{width:100%;}
+    .team-name-input{font-size:28px;text-align:center;border-bottom-width:2px;}
+    .eyebrow{text-align:center;}
+    .logo-frame{width:96px;height:108px;}
+
+    .roster-grid, .sub-grid{grid-template-columns:1fr;}
+
+    .verify-card{flex-direction:column;align-items:stretch;text-align:center;padding:20px;}
+    .verify-text{text-align:center;}
+    .verify-actions{flex-direction:column;align-items:stretch;width:100%;}
+    .channel-btn{text-align:center;padding:12px 16px;}
+    .check-row{justify-content:center;padding:6px 0;}
+
+    .lock-btn{width:100%;padding:16px 24px;}
+    .submit-zone{margin-top:32px;}
+  }
+
+  @media (max-width:360px){
+    .team-name-input{font-size:24px;}
+    .stamp{padding:16px 26px;font-size:26px;}
+  }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="wrap">
+
+  <div class="id-banner">
+    <button type="button" class="logo-frame" id="logoFrame">
+      <span class="plus-icon" id="logoPlaceholder"><b>+</b>LOGO</span>
+      <img id="logoPreview" style="display:none;" alt="Team logo preview">
+    </button>
+    <input type="file" id="logoInput" accept="image/*">
+    <div class="banner-main">
+      <p class="eyebrow">Squad Registration &middot; Season Entry</p>
+      <input type="text" class="team-name-input" id="teamName" placeholder="TEAM NAME" maxlength="40">
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <span class="section-tag">01</span>
+      <h2 class="section-title">Main Roster</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="roster-grid">
+      <div class="slot-card leader">
+        <div class="slot-tag"><span class="crown">&#9813;</span> Team Leader</div>
+        <input type="text" class="slot-input" data-role="leader" placeholder="IGN / Discord tag">
+      </div>
+      <div class="slot-card">
+        <div class="slot-tag">Player 1</div>
+        <input type="text" class="slot-input" data-role="player" placeholder="IGN / Discord tag">
+      </div>
+      <div class="slot-card">
+        <div class="slot-tag">Player 2</div>
+        <input type="text" class="slot-input" data-role="player" placeholder="IGN / Discord tag">
+      </div>
+      <div class="slot-card">
+        <div class="slot-tag">Player 4</div>
+        <input type="text" class="slot-input" data-role="player" placeholder="IGN / Discord tag">
+      </div>
+      <div class="slot-card">
+        <div class="slot-tag">Player 5</div>
+        <input type="text" class="slot-input" data-role="player" placeholder="IGN / Discord tag">
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <span class="section-tag">02</span>
+      <h2 class="section-title">Substitutes</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="sub-grid">
+      <div class="slot-card sub">
+        <div class="slot-tag">Sub Player 1</div>
+        <input type="text" class="slot-input" data-role="sub" placeholder="IGN / Discord tag">
+      </div>
+      <div class="slot-card sub">
+        <div class="slot-tag">Sub Player 2</div>
+        <input type="text" class="slot-input" data-role="sub" placeholder="IGN / Discord tag">
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <span class="section-tag">03</span>
+      <h2 class="section-title">Verification</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="verify-card">
+      <div class="verify-text">
+        <p>Entry is gated behind following <span class="handle">@HaaataaX</span>. Hit follow, then check the box below to unlock submission.</p>
+      </div>
+      <div class="verify-actions">
+        <a href="#" id="channelLink" target="_blank" rel="noopener" class="channel-btn">Open @HaaataaX &#8599;</a>
+        <label class="check-row">
+          <input type="checkbox" id="subscribeCheck">
+          <span>I'm following @HaaataaX</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="submit-zone">
+    <button type="button" class="lock-btn" id="submitBtn" disabled>
+      <span class="spinner"></span><span class="btn-label">Lock In Roster</span>
+    </button>
+    <div class="status-msg" id="statusMsg"></div>
+    <p class="hint">All fields plus the follow-check are required before you can lock in.</p>
+  </div>
+
+  <footer>LOGO TEAM &middot; Registration relays straight to our Discord via a Cloudflare Worker</footer>
+</div>
+
+<div class="stamp-overlay" id="stampOverlay">
+  <div style="text-align:center;">
+    <div class="stamp">Locked In<small>Your roster has been submitted</small></div>
+  </div>
+</div>
+
+<script>
+  // ====== CONFIG — replace with your deployed values ======
+  const WORKER_URL = "https://YOUR-WORKER-SUBDOMAIN.workers.dev"; // Cloudflare Worker endpoint
+  const CHANNEL_URL = "https://www.youtube.com/@HaaataaX"; // update to the real platform/link
+  // ==========================================================
+
+  document.getElementById('channelLink').href = CHANNEL_URL;
+
+  const logoFrame = document.getElementById('logoFrame');
+  const logoInput = document.getElementById('logoInput');
+  const logoPreview = document.getElementById('logoPreview');
+  const logoPlaceholder = document.getElementById('logoPlaceholder');
+  let logoFile = null;
+
+  logoFrame.addEventListener('click', () => logoInput.click());
+  logoInput.addEventListener('change', () => {
+    const file = logoInput.files[0];
+    if (!file) return;
+    logoFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      logoPreview.src = e.target.result;
+      logoPreview.style.display = 'block';
+      logoPlaceholder.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+  ['dragover','drop'].forEach(evt => {
+    logoFrame.addEventListener(evt, e => e.preventDefault());
+  });
+  logoFrame.addEventListener('drop', e => {
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      logoInput.files = e.dataTransfer.files;
+      logoInput.dispatchEvent(new Event('change'));
+    }
+  });
+
+  const teamNameInput = document.getElementById('teamName');
+  const leaderInput = document.querySelector('[data-role="leader"]');
+  const playerInputs = document.querySelectorAll('[data-role="player"]');
+  const subInputs = document.querySelectorAll('[data-role="sub"]');
+  const subscribeCheck = document.getElementById('subscribeCheck');
+  const submitBtn = document.getElementById('submitBtn');
+  const statusMsg = document.getElementById('statusMsg');
+  const stampOverlay = document.getElementById('stampOverlay');
+
+  function validate(){
+    const filled = v => v.value.trim().length > 0;
+    const allPlayers = [...playerInputs].every(filled);
+    const allSubs = [...subInputs].every(filled);
+    const ok = filled(teamNameInput) && filled(leaderInput) && allPlayers && allSubs && subscribeCheck.checked;
+    submitBtn.disabled = !ok;
+  }
+  [teamNameInput, leaderInput, ...playerInputs, ...subInputs].forEach(el => el.addEventListener('input', validate));
+  subscribeCheck.addEventListener('change', validate);
+
+  submitBtn.addEventListener('click', async () => {
+    statusMsg.textContent = '';
+    statusMsg.className = 'status-msg';
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+
+    const fd = new FormData();
+    fd.append('teamName', teamNameInput.value.trim());
+    fd.append('leader', leaderInput.value.trim());
+    fd.append('players', JSON.stringify([...playerInputs].map(i => i.value.trim())));
+    fd.append('subs', JSON.stringify([...subInputs].map(i => i.value.trim())));
+    fd.append('subscribed', subscribeCheck.checked ? 'true' : 'false');
+    if (logoFile) fd.append('logo', logoFile);
+
+    try {
+      const res = await fetch(WORKER_URL, { method: 'POST', body: fd });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Submission failed');
+
+      stampOverlay.classList.add('show');
+      statusMsg.textContent = 'Roster delivered to Discord.';
+      statusMsg.classList.add('ok');
+    } catch (err) {
+      statusMsg.textContent = err.message || 'Something went wrong — try again.';
+      statusMsg.classList.add('err');
+      submitBtn.disabled = false;
+    } finally {
+      submitBtn.classList.remove('loading');
+    }
+  });
+
+  stampOverlay.addEventListener('click', () => stampOverlay.classList.remove('show'));
+</script>
+</body>
+</html>
