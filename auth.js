@@ -14,7 +14,7 @@
    ============================================================ */
 
 // >>> EDIT THIS to your deployed Worker URL <<<
-const API_BASE = "";
+const API_BASE = "https://caffe-mc-tournament-api.phanhaotdg.workers.dev";
 
 const AUTH_USER_KEY = "coffemc_user";
 
